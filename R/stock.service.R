@@ -182,7 +182,7 @@ earnings <- function (symbol, period = "quarter", lastN=1) {
   if (res$status) return (tibble::as_tibble(list()))
   data <- res$content$earnings
   data <- lapply(data,function(x){ lapply(x, function(y) {ifelse(is.null(y),NA,y)})});
-  tibble::as_tibble(do.call(rbind,data)) %>%
+  tibble::as_tibble(do.call(data.table::rbindlist,data, c(fill=TRUE))) %>%
     tibble::add_column(symbol = symbol,.before=1) %>%
     tidyr::unnest_legacy();
 };
