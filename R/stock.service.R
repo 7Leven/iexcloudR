@@ -848,7 +848,9 @@ recommendationTrend <- function (symbol) {
   res = iex_api(endpoint);
   if (res$status) return (tibble::as_tibble(list()))
   data <- lapply(res$content,function(x){ lapply(x, function(y) {ifelse(is.null(y),NA,y[[1]])})});
-  tibble::as_tibble(do.call(rbind,data)) %>%
+  tib <- tibble::as_tibble(do.call(rbind,data))
+  if(nrow(tib) == 0){return(tibble::tibble())}
+  tib %>%
     tidyr::unnest_legacy() %>%
   dplyr::mutate(consensusEndDate = lubridate::ymd(lubridate::as_datetime(consensusEndDate/1000)),
                 consensusStartDate = lubridate::ymd(lubridate::as_datetime(consensusStartDate/1000)),
