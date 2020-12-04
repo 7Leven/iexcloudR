@@ -154,9 +154,12 @@ dividends <- function (symbol, timePeriod = "3m") {
   res = iex_api(endpoint);
   if (!res$status) {
   data <- lapply(res$content,function(x){ lapply(x, function(y) {ifelse(is.null(y),NA,y)})});
-  tibble::as_tibble(do.call(rbind,data)) %>%
-    tibble::add_column(symbol = symbol,.before=1) %>%
-    tidyr::unnest_legacy();
+  data <- as.data.table(do.call(rbind, data))
+  setcolorder(data, c("symbol", setdiff(colnames(data), "symbol")))
+  data
+  # tibble::as_tibble(do.call(rbind,data)) %>%
+  #   tibble::add_column(symbol = symbol,.before=1) %>%
+  #   tidyr::unnest_legacy();
   } else {
     tibble::as_tibble(list());
   }
