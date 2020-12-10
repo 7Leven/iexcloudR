@@ -406,7 +406,7 @@ historyFor <- function (symbol,
     })
 
   df <- tibble::as_tibble(do.call(rbind, data)) %>%
-    tibble::add_column(symbol = symbol, .before = 1) %>%
+    dplyr::relocate(symbol, .before = 1) %>%
     tidyr::unnest_legacy() %>%
     dplyr::mutate_at(dplyr::vars(date), dplyr::funs(lubridate::ymd(.)))
 
