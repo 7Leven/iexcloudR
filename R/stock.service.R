@@ -113,6 +113,15 @@ company <- function (symbol) {
   }
 }
 
+brain_sentiment <- function(symbol, window = "week"){
+  point <- list("week" = "/time-series/PREMIUM_BRAIN_SENTIMENT_7_DAYS/{symbol}",
+                "3week" = "/time-series/PREMIUM_BRAIN_RANKING_21_DAYS/{symbol}",
+                "month" = "/time-series/PREMIUM_BRAIN_SENTIMENT_30_DAYS/{symbol}")
+  endpoint <- glue::glue(point[[window]])
+  res = iex_api(endpoint)
+  return(res)
+}
+
 
 #' Retrieve delayed quote for a symbol as dataframe
 #'
@@ -405,7 +414,7 @@ historyFor <- function (symbol,
       })
     })
 
-  df <- tibble::as_tibble(do.call(rbind, data)) %>%
+  df <- tibble::as_tibble(data.table::rbindlist(data, fill = TRUE)) %>%
     dplyr::relocate(symbol, .before = 1) %>%
     tidyr::unnest_legacy() %>%
     dplyr::mutate_at(dplyr::vars(date), dplyr::funs(lubridate::ymd(.)))
